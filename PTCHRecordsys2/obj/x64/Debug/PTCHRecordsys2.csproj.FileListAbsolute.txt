@@ -1,0 +1,6 @@
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\x64\Debug\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\x64\Debug\PTCHRecordsys2.pdb
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\x64\Debug\Newtonsoft.Json.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\x64\Debug\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\x64\Debug\PTCHRecordsys2.pdb
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\x64\Debug\PTCHRecordsys2.dll.config

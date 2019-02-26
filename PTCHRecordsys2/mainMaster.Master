@@ -1,0 +1,497 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="mainMaster.master.cs" Inherits="PTCHRecordsys2.mainMaster" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>屏基病歷查詢系統</title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link href="font-awesome-4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link href="Css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="Css/select2-bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="Css/select2.css" rel="stylesheet" type="text/css" />
+    <link href="Css/ptchRecordsys.css" rel="stylesheet" type="text/css" />
+    <link href="Css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="Css/jquery-ui-timepicker-addon.css" rel="stylesheet" type="text/css" />
+    <link href="Css/jquery-ui.css" rel="stylesheet" type="text/css" />    
+    <script src="Js/jquery-3.1.1.min.js" type="text/javascript"></script>
+    <script src="Js/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>   
+    <script src="jquery.blockUI/jquery.blockUI.js" type="text/javascript"></script>
+    <script src="Js/jquery-paginate.js" type="text/javascript"></script> 
+    <script src="Js/jquery.dataTables.min.js" type="text/javascript"></script> 
+    <script src="Js/dataTables.bootstrap.min.js" type="text/javascript"></script> 
+     
+    <style>
+        
+        .ContainerBase
+        {
+            width:100%;
+            margin:auto;           
+        }
+        
+        #color_pink
+        {
+            border:1px solid gray;
+            position:absolute;
+            left:0;
+            background-color:rgba(255, 194, 224,1);
+            width:20px;
+            height:20px;
+            cursor:pointer;
+        }
+        
+        #color_gray
+        {
+            border:1px solid gray;
+            position:absolute;            
+            left:20px;
+            background-color:rgba(209, 209, 209,1);
+            width:20px;
+            height:20px;
+            cursor:pointer;
+        }
+        
+        .ContainerTop
+        {
+            width:100%;
+        }
+        
+        #LeftControl
+        {
+            width:100%;
+        }
+        #LeftControl:hover
+        {
+            opacity: 0.5;
+        }
+        
+        .ContainerLeft
+        {
+            width:20%;
+            float:left;
+            padding:5px;
+        }
+        
+        .ContainerRight
+        {
+            /*height:1280px;*/
+            width:80%;
+            border-radius:15px;
+            float:right;
+            padding:5px;
+        }
+        
+        .ContainerBottom
+        {
+            clear:both;
+        }
+        
+        #patinfo_panel
+        {
+            margin-bottom:5px;
+        }
+        
+        .MainContent
+        {
+            margin-bottom:5px;
+            padding:0;
+            box-shadow: 0px 0px 0px #ddd;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('.scrolldiv').css('max-height', $(document).height() - 200);
+
+            var stickyHeaderTop = $('#patinfo_panel').offset().top;
+
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > stickyHeaderTop) {
+                    $('#patinfo_panel').css({ 'position': 'fixed', 'top': '0px', 'box-shadow': '10px 10px 5px grey','z-index':'999' });
+                    $('#sticky').css('display', 'block');
+                } else {
+                    $('#patinfo_panel').css({ 'position': 'static', 'top': '0px', 'box-shadow': '0px 0px 0px grey', 'z-index': '0' });
+                    $('#sticky').css('display', 'none');
+                }
+                patinfo_panelResize();
+            });
+
+            $(".select2-single").select2({
+                theme: "bootstrap",
+                width: null,
+                containerCssClass: ':all:'
+            });
+
+            $("#txt_FreeDate1").datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+
+            $("#txt_FreeDate2").datepicker({
+                dateFormat: 'yy-mm-dd'
+            });
+
+            $('.options').css({
+                'font-family': '微軟正黑體'
+            });
+
+            $('#ddl_OpdList').on('change', function () {
+                if (this.value == "free") {
+                    $('#freedate').show('fast');
+                }
+                else {
+                    $('#freedate').hide('fast');
+                }
+            });
+
+            $('#LeftControl').click(function () {
+                LeftisShow();
+            });
+
+            $('#ddl_visits').change(function () {
+                showBlockUI();
+            });
+
+            $('.ContainerBase .nav-tabs li,.ContainerBase .btn,.ContainerBase .row-btn').click(function () {
+                showBlockUI();
+            });
+
+            $('#About').click(function () {
+                var msg = "<p class='text-center'>如果您使用IE8 (含)以下版本瀏覽器，建議您升級您的IE瀏覽器或使用Google Chrome以獲得最佳瀏覽體驗</p>";
+                msg += "<p class='text-center'>Copyright © 屏基醫療財團法人屏東基督教醫院 | 系統維護人員：郭璁翰 分機：1731~1733</p>";
+                showAlert(msg);
+            });
+
+            $('.page-navigation a').click(function () {
+                $('html, body').animate({
+                    scrollTop: $("#visits_record").offset().top
+                }, 100);
+            });
+        });
+
+        function patinfo_panelResize() {
+            var patinfoW = $('#patinfo_panel').width();
+            var w = $(".ContainerRight").width();
+            if (w != patinfoW) {
+                $('#patinfo_panel').width(w);
+            }
+        }
+
+        function showAlert(Msg) {
+            $('#alertMsg').html(Msg);
+            $('#alertModal').modal('show');
+        };
+
+        function showAlertRedirect(Msg, Url) {
+            $('#alertMsg').text(Msg);
+            $('#alertModal').modal('show');
+            $("#AlertYes").click(function () {
+                location.href = Url;
+            });
+        };
+
+        function RenderPage(div_IDisShow, div_VisitsisShow, div_patinfoisShow) {
+            //           alert(div_IDisShow + "\n" + div_VisitsisShow + "\n" + div_patinfoisShow);
+            var PS = document.getElementById("PageStatus").value;
+            if (PS == "One") {
+                $('#tab_sum').hide();
+            }
+            else if (PS == "Two") {
+                $('#tab_sum').show();
+            }
+            else if (PS == "Three") {
+                $('#tab_sum').show();
+            }
+
+            if (div_IDisShow == "0") {
+                $("#div_ID").removeClass("in");
+                $("a[href='#div_ID'] > span:first").removeClass("glyphicon glyphicon-triangle-top").addClass("glyphicon glyphicon-triangle-bottom");
+            }
+            else {
+                $("a[href='#div_ID'] > span:first").removeClass("glyphicon glyphicon-triangle-bottom").addClass("glyphicon glyphicon-triangle-top");
+            }
+            if (div_VisitsisShow == "0") {
+               $("#div_Visits").removeClass("in");
+            }
+            if (div_patinfoisShow == "0") {
+                $("#div_patinfo").removeClass("in");
+                $("a[href='#div_patinfo'] > span:first").removeClass("glyphicon glyphicon-triangle-top").addClass("glyphicon glyphicon-triangle-bottom");
+            }
+            else {
+                $("a[href='#div_patinfo'] > span:first").removeClass("glyphicon glyphicon-triangle-bottom").addClass("glyphicon glyphicon-triangle-top");
+            }
+
+            if($('#ddl_OpdList').val() == "free")
+            {
+                $('#freedate').show('fast');
+            }
+            else
+            {
+                $('#freedate').hide();
+            }
+
+            if ($('#visits_DDLStyle option').length > 1) {
+                $('#visits_TableStyle').hide();                
+            }
+
+            if ($('#visits_TableStyle tr').length > 0) {
+                $('#visits_DDLStyle').hide();
+                var selectDate = document.getElementById("SelectDate").value;
+                if (selectDate != "") {
+                    var a = document.getElementById(selectDate);
+                    a.parentNode.style.backgroundColor = "rgba(209, 209, 209,.7)";
+                }
+            }
+        }
+        function SetRenderArg(div) {
+            var a = document.getElementById(div);
+            var thisclass = a.getAttribute("Class");
+            var isShow = thisclass.substr(thisclass.length - 2);
+            if (isShow == "in") {
+                document.getElementById(div + "isShow").value = "0";
+                $('a[href="#' + div + '"] > span:first').removeClass("glyphicon glyphicon-triangle-top").addClass("glyphicon glyphicon-triangle-bottom");
+            }
+            else {
+                document.getElementById(div + "isShow").value = "1";
+                $('a[href="#' + div + '"] > span:first').removeClass("glyphicon glyphicon-triangle-bottom").addClass("glyphicon glyphicon-triangle-top");
+            }
+ //           alert(div_IDisShow.value + "\n" + div_VisitsisShow.value + "\n" + div_patinfoisShow.value);
+        }
+        function LeftisShow() {            
+            var isshow = document.getElementById("leftisShow").value;
+            if (isshow == "1") {
+                $(".ContainerLeft").toggle("slide", function () {
+                    $(".ContainerRight").css("width", "100%");
+                    patinfo_panelResize();
+                });     
+                document.getElementById("leftisShow").value = "0";
+                document.getElementById("LeftControl").childNodes[0].innerText = "►";
+                $('#pull-right-info').show();               
+            }
+            else {
+                $(".ContainerRight").css("width", "80%");
+                $(".ContainerLeft").toggle("slide"); 
+                document.getElementById("leftisShow").value = "1";
+                document.getElementById("LeftControl").childNodes[0].innerText = "◄";
+                $('#pull-right-info').hide();
+                patinfo_panelResize();
+            }            
+        }
+
+        function LeftRender(isshow) {
+            if (isshow == "0") {
+                $(".ContainerLeft").hide();
+                $(".ContainerRight").css("width", "100%");
+                document.getElementById("LeftControl").childNodes[0].innerText = "►";
+                $('#pull-right-info').show();
+            }
+            else {
+                $(".ContainerLeft").fadeIn("slow");
+                $(".ContainerRight").css("width", "80%");
+                document.getElementById("LeftControl").childNodes[0].innerText = "◄";
+                $('#pull-right-info').hide();
+            }
+            patinfo_panelResize();
+        }
+    </script>
+</head>
+<body>
+    <!--AlertModal-->
+    <div class="modal fade" tabindex="-1" role="dialog" id="alertModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">
+                        系統訊息</h4>
+                </div>
+                <div class="modal-body" id="alertMsg">
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="AlertYes">
+                        關閉</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!--//AlertModal-->
+    <form id="form1" runat="server">
+        <asp:HiddenField ID="div_IDisShow" runat="server" ClientIDMode="Static" Value="1" />
+        <asp:HiddenField ID="div_VisitsisShow" runat="server" ClientIDMode="Static" Value="1" />
+        <asp:HiddenField ID="div_patinfoisShow" runat="server" ClientIDMode="Static" Value="1" />
+        <asp:HiddenField ID="leftisShow" runat="server" ClientIDMode="Static" Value="1" />
+        <asp:HiddenField ID="PageStatus" runat="server" ClientIDMode="Static" Value="One" />
+        <asp:HiddenField ID="SelectDate" runat="server" ClientIDMode="Static" Value="" />
+        <div class="ContainerBase">
+            <div class="ContainerTop">
+                <nav class="navbar navbar-custom navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                                <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand" href="<%= ResolveUrl("~/main.aspx") %>"><img src="Images/PTCH_Medical_Records_System.png" /></a>                        
+                        </div>                    
+                        <ul class="nav navbar-nav">
+                             <li id="LeftControl"><a href="#"></a></li>
+                        </ul>
+                        <!-- /.navbar-header -->
+                        <ul class="nav navbar-nav navbar-right">
+                            <li id="About"><a href="#">關於</a></li>
+                            <li class="dropdown">
+                                <asp:PlaceHolder ID="panelLogin" runat="server"></asp:PlaceHolder>
+                                <!-- /.dropdown-user -->
+                            </li>
+                            <!-- /.dropdown -->
+                        </ul>
+                    </div>
+                </nav>    
+            </div>
+
+            <div class="ContainerLeft">
+                <div class="panel panel-default ID_panel">
+                    <div class="panel-heading clearfix">
+                        <a data-toggle="collapse" href="#div_ID" aria-expanded="true" onclick="SetRenderArg('div_ID')"><span></span>查詢區塊</a>
+                    </div>
+                    <div id="div_ID" class="panel-collapse collapse in" aria-expanded="true">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <p>請輸入病歷號或身分證號</p>
+                                <asp:TextBox ID="asp_txtIDsearch" runat="server" CssClass="form-control"></asp:TextBox>
+                            </div>
+                            <div class="form-group">
+                                <p>請選擇查詢日期區間</p>
+                                <asp:DropDownList ID="ddl_OpdList" runat="server" 
+                                    CssClass="form-control" ClientIDMode="Static">
+                                    <asp:ListItem Value="month">最近一個月</asp:ListItem>
+                                    <asp:ListItem Value="3months">最近三個月</asp:ListItem>
+                                    <asp:ListItem Value="6months">最近半年</asp:ListItem>
+                                    <asp:ListItem Value="year">最近一年</asp:ListItem>
+                                    <asp:ListItem Value="3years">最近三年</asp:ListItem>
+                                    <asp:ListItem Value="5years">最近五年</asp:ListItem>
+                                    <asp:ListItem Value="free">自訂日期區間</asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+                            <div id="freedate" class="form-group" style="display: none">
+                                <p>起始日期</p>
+                                <asp:TextBox ID="txt_FreeDate1" runat="server" CssClass="form-control"></asp:TextBox>
+                                <p>結束日期</p>
+                                <asp:TextBox ID="txt_FreeDate2" runat="server" CssClass="form-control"></asp:TextBox>
+                            </div>
+                            <div class="form-group text-center">
+                                <asp:Button ID="asp_btnIDsearch" runat="server" Text="查詢" 
+                                    CssClass="btn btn-default" onclick="aspbtnIDsearch_Click" />
+                                <asp:Button ID="asp_btnCancel" runat="server" Text="取消" 
+                                    CssClass="btn btn-default" onclick="asp_btnCancel_Click" />
+                            </div>
+
+                            <p id="visits_record">就診紀錄</p>
+                            <div class="form-group" id="visits_DDLStyle">
+                                <asp:DropDownList ID="ddl_visits" runat="server" 
+                                        CssClass="form-control" ClientIDMode="Static" AutoPostBack="True" 
+                                    onselectedindexchanged="ddl_visits_SelectedIndexChanged">
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="visits_TableStyle">
+                            <table class="table table-hover" id="table_visits">
+                                <thead>
+                                </thead>
+                                <tbody>
+                                    <asp:PlaceHolder ID="PH_visits_tbody" runat="server" ViewStateMode="Enabled"></asp:PlaceHolder>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ContainerRight container-fluid">
+                <div id="patinfo_panel" class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <a data-toggle="collapse" href="#div_patinfo" aria-expanded="true" onclick="SetRenderArg('div_patinfo')"><span></span>病人基本資料 
+                        <asp:Label ID="asp_lbPatName" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                        (<asp:Label ID="asp_lbSex" runat="server" Text="" CssClass="text-primary"></asp:Label>)
+                        <asp:Label ID="asp_lbRegNo" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                        </a>
+                        <div id="pull-right-info" class="btn-group pull-right">
+                            <asp:Label ID="asp_lbOpdDate" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                            <asp:Label ID="asp_lbVisitType" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                        </div>
+                    </div>
+                    <div id="div_patinfo" class="panel-collapse collapse in" aria-expanded="true">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <div class="col-sm-3">                                    
+                                    身分證號 
+                                    <asp:Label ID="asp_lbID" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                                </div>
+                                <div class="col-sm-3">
+                                    出生年月日
+                                    <asp:Label ID="asp_lbBirthDate" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                                </div>
+                                <div class="col-sm-3">
+                                    科別名稱
+                                    <asp:Label ID="asp_lbDepNo" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                                </div>
+                                <div class="col-sm-3">
+                                    醫生姓名
+                                    <asp:Label ID="asp_lbDocName" runat="server" Text="" CssClass="text-primary"></asp:Label>
+                                </div>
+                            </div>
+                            <div class ="form-group hide">
+                                <asp:DropDownList ID="asp_ddlDepNo" runat="server" 
+                                    CssClass="form-control select2-single" ClientIDMode="Static" Enabled="False" Visible="False">
+                                </asp:DropDownList>
+                                <asp:DropDownList ID="asp_ddlDocName" runat="server" 
+                                    CssClass="form-control select2-single" ClientIDMode="Static" Enabled="False" Visible="False">
+                                </asp:DropDownList>
+                                <asp:TextBox ID="asp_txtBedNo" runat="server" CssClass="form-control" ClientIDMode="Static" ReadOnly="True" Visible="False"></asp:TextBox>
+                                <asp:TextBox ID="asp_txtOutDate" runat="server" CssClass="form-control" ClientIDMode="Static" ReadOnly="True" Visible="False"></asp:TextBox>                               
+                                <asp:TextBox ID="asp_txtKeyBill" runat="server" CssClass="form-control" ClientIDMode="Static" ReadOnly="True" Visible="False"></asp:TextBox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="sticky"></div>
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                
+                </asp:ContentPlaceHolder>
+            </div>
+
+
+            <div class="ContainerBottom">
+                <%--<div id="color_pink"></div>
+                <div id="color_gray"></div>--%>
+            </div>     
+            
+        </div>
+        
+        <script src="Js/bootstrap.js" type="text/javascript"></script>
+        <script src="Js/jquery-ui.js" type="text/javascript"></script>       
+        <script src="Js/metisMenu.js" type="text/javascript"></script>
+        <script src="Js/datepicker_zh-tw.js" type="text/javascript"></script>
+        <script src="Js/select2.full.js" type="text/javascript"></script>      
+        <script>
+            $('#table_visits').paginate({ limit: 10 });
+            $('#table_opdorder').dataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 15,20, 25, 50, 75, 100]
+            });
+            $('#table_ipdorder').dataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 15,20, 25, 50, 75, 100]
+            });
+            $('#table_Statement').dataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 15,20, 25, 50, 75, 100]
+            });
+        </script>         
+    </form>
+</body>
+</html>

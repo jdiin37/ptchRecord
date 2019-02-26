@@ -1,0 +1,4 @@
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\PTCHRecordsys2.pdb
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Release\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Release\PTCHRecordsys2.pdb

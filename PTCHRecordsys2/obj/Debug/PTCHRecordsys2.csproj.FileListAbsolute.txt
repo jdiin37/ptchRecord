@@ -1,0 +1,8 @@
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\PTCHRecordsys2.dll.config
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\bin\PTCHRecordsys2.pdb
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Debug\PTCHRecordsys2.csprojResolveAssemblyReference.cache
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Debug\PTCHRecordsys2.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Debug\PTCHRecordsys2.pdb
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Debug\Interop.ADODB.dll
+D:\TFS\PTCHRecordsys2\PTCHRecordsys2\obj\Debug\PTCHRecordsys2.csproj.ResolveComReference.cache
